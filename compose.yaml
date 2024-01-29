@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  kong:
+    build: .
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+    command: kong migrations bootstrap
+    depends_on:
+      - postgres
+    restart: on-failure
+    networks:
+      - kong-network
+
+  postgres:
+    image: postgres:9.5
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=kong
+      - POSTGRES_PASSWORD=kong
+      - POSTGRES_DB=kong
+    volumes:
+      - kong-data:/var/lib/postgresql/data
+    networks:
+      - kong-network
+
+networks:
+  kong-network:
+
+volumes:
+  kong-data:
